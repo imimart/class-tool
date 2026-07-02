@@ -1,344 +1,849 @@
-﻿<!doctype html>
-<html lang="zh-Hant">
+<!doctype html>
+<html lang="zh-Hant" data-theme="neobrutalism">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>課堂休息時間倒數計時器</title>
+    <title>課堂休息倒數器</title>
+    <!-- 載入 Google Fonts: Outfit 與 繁體中文 Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --ink: #171717;
-        --paper: #fff7df;
-        --red: #e6323f;
-        --teal: #009b9e;
-        --yellow: #ffd23f;
-        --orange: #ff7a1a;
-        --blue: #2f59ff;
-        --green: #24b36b;
-        --purple: #8a3ffc;
+        /* Neobrutalism 亮色主題變數 */
+        --bg-gradient: radial-gradient(circle at 18% 18%, rgba(255, 210, 63, 0.4) 0 7%, transparent 7.4%),
+                       radial-gradient(circle at 82% 22%, rgba(230, 50, 63, 0.4) 0 6%, transparent 6.4%),
+                       radial-gradient(circle at 22% 82%, rgba(47, 89, 255, 0.3) 0 8%, transparent 8.4%),
+                       linear-gradient(135deg, #fff9db 0%, #f4fffa 35%, #ffeef0 70%, #e8f9ff 100%);
+        --card-bg: rgba(255, 253, 245, 0.95);
+        --text-color: #1a1a1a;
+        --border-color: #1a1a1a;
+        --border-width: 3px;
+        --accent: #ffd23f;
+        --card-shadow: 8px 8px 0px #1a1a1a;
+        --btn-shadow: 4px 4px 0px #1a1a1a;
+        --btn-hover-transform: translate(-2px, -2px);
+        --btn-active-transform: translate(2px, 2px);
+        
+        --color-start: #24b36b;
+        --color-pause: #ffd23f;
+        --color-reset: #e6323f;
+        --color-btn-text: #1a1a1a;
+        
+        --badge-bg: #ff7a1a;
+        --badge-text: #ffffff;
+        --active-message-color: #e6323f;
+
+        /* 倒數文字醒目顏色 - 粗獷深寶藍 */
+        --timer-color: #2f59ff; 
       }
 
-      * { box-sizing: border-box; }
+      /* Cyberpunk 暗色主題變數 */
+      [data-theme="cyberpunk"] {
+        --bg-gradient: radial-gradient(circle at 50% 50%, #150030 0%, #030008 100%);
+        --card-bg: rgba(20, 5, 38, 0.85);
+        --text-color: #00ffff;
+        --border-color: #ff007f;
+        --border-width: 2px;
+        --accent: #ff007f;
+        --card-shadow: 0px 0px 25px rgba(255, 0, 127, 0.5), inset 0 0 15px rgba(0, 255, 255, 0.1);
+        --btn-shadow: 0px 0px 10px rgba(0, 255, 255, 0.4);
+        --btn-hover-transform: scale(1.03);
+        --btn-active-transform: scale(0.97);
+        
+        --color-start: #39ff14;
+        --color-pause: #ff007f;
+        --color-reset: #ff0000;
+        --color-btn-text: #050010;
+        
+        --badge-bg: #00ffff;
+        --badge-text: #050010;
+        --active-message-color: #ffea00;
+
+        /* 倒數文字醒目顏色 - 炙熱霓虹粉 */
+        --timer-color: #ff007f; 
+      }
+
+      /* Emerald 翡翠微光主題變數 */
+      [data-theme="emerald"] {
+        --bg-gradient: linear-gradient(135deg, #0b3c2b 0%, #08201d 100%);
+        --card-bg: rgba(12, 38, 30, 0.75);
+        --text-color: #d1fae5;
+        --border-color: #34d399;
+        --border-width: 2px;
+        --accent: #34d399;
+        --card-shadow: 0px 15px 35px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        --btn-shadow: 0 4px 12px rgba(52, 211, 153, 0.2);
+        --btn-hover-transform: translateY(-3px);
+        --btn-active-transform: translateY(1px);
+        
+        --color-start: #34d399;
+        --color-pause: #f59e0b;
+        --color-reset: #ef4444;
+        --color-btn-text: #064e3b;
+        
+        --badge-bg: #10b981;
+        --badge-text: #ffffff;
+        --active-message-color: #fbbf24;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+
+        /* 倒數文字醒目顏色 - 螢光翡翠綠 */
+        --timer-color: #00ffaa; 
+      }
+
+      /* Sunset 暖陽粉橘主題變數 */
+      [data-theme="sunset"] {
+        --bg-gradient: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+        --card-bg: rgba(255, 255, 255, 0.85);
+        --text-color: #2d3748;
+        --border-color: #4a5568;
+        --border-width: 2px;
+        --accent: #f6ad55;
+        --card-shadow: 0 12px 28px rgba(0, 0, 0, 0.08), 0 8px 10px rgba(0, 0, 0, 0.06);
+        --btn-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        --btn-hover-transform: translateY(-2px);
+        --btn-active-transform: translateY(0);
+        
+        --color-start: #48bb78;
+        --color-pause: #f6ad55;
+        --color-reset: #fc8181;
+        --color-btn-text: #ffffff;
+        
+        --badge-bg: #ed8936;
+        --badge-text: #ffffff;
+        --active-message-color: #c2410c;
+
+        /* 倒數文字醒目顏色 - 鮮豔暖夕陽橘 */
+        --timer-color: #e53e3e; 
+      }
+
+      * {
+        box-sizing: border-box;
+        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+      }
 
       body {
         margin: 0;
         min-height: 100vh;
-        overflow: auto;
-        color: var(--ink);
-        font-family: "Microsoft JhengHei", "Segoe UI", sans-serif;
-        letter-spacing: 0;
-        background:
-          radial-gradient(circle at 18% 18%, rgba(255, 210, 63, 0.92) 0 7%, transparent 7.4%),
-          radial-gradient(circle at 82% 22%, rgba(230, 50, 63, 0.92) 0 6%, transparent 6.4%),
-          radial-gradient(circle at 22% 82%, rgba(47, 89, 255, 0.85) 0 8%, transparent 8.4%),
-          linear-gradient(135deg, #fff2b0 0 18%, #f7fffb 18% 36%, #ffd7dc 36% 56%, #d9f8ff 56% 75%, #fff2b0 75%);
+        color: var(--text-color);
+        font-family: "Outfit", "Noto Sans TC", "Microsoft JhengHei", "Segoe UI", sans-serif;
+        background: var(--bg-gradient);
+        background-attachment: fixed;
       }
 
-      body::before,
-      body::after {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-      }
-
-      body::before {
-        opacity: 0;
-      }
-
-      body::after {
-        opacity: 0;
+      @media (min-width: 993px) {
+        body {
+          max-height: 100vh;
+          overflow: hidden;
+        }
       }
 
       canvas {
         position: fixed;
         inset: 0;
-        z-index: 4;
+        z-index: 10;
         pointer-events: none;
       }
 
       .app {
         position: relative;
         z-index: 1;
-        min-height: 100vh;
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 330px;
-        gap: 18px;
-        padding: 14px;
-      }
-
-      .stage,
-      .panel {
-        border: 2px solid rgba(23, 23, 23, 0.28);
-        border-radius: 8px;
-        background: rgba(255, 247, 223, 0.96);
-        box-shadow: none;
-      }
-
-      .stage {
-        position: relative;
-        display: grid;
-        grid-template-rows: auto minmax(0, 1fr);
-        min-height: calc(100vh - 36px);
+        max-width: 1350px;
+        margin: 0 auto;
         padding: 16px;
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) 380px;
+        gap: 16px;
+        min-height: 100vh;
+        align-items: start;
       }
 
-      .stage::before,
-      .panel::before {
+      @media (min-width: 993px) {
+        .app {
+          height: 100vh;
+          align-items: stretch;
+        }
+      }
+
+      /* 側邊設定面板與主要內容卡片樣式 */
+      .card {
+        border: var(--border-width) solid var(--border-color);
+        border-radius: 16px;
+        background: var(--card-bg);
+        box-shadow: var(--card-shadow);
+        padding: 18px 24px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Neobrutalism 風格專用裝飾條 */
+      [data-theme="neobrutalism"] .card::before {
         content: "";
         display: block;
-        height: 10px;
-        margin-bottom: 10px;
-        border: 2px solid rgba(23, 23, 23, 0.65);
-        background:
-          linear-gradient(135deg, var(--red) 0 25%, transparent 25% 50%, var(--teal) 50% 75%, transparent 75%) 0 0 / 46px 16px repeat-x,
-          var(--yellow);
+        height: 6px;
+        margin: -18px -24px 14px -24px;
+        border-bottom: var(--border-width) solid var(--border-color);
+        background: linear-gradient(90deg, #e6323f 0%, #ffd23f 25%, #009b9e 50%, #2f59ff 75%, #ff7a1a 100%);
       }
 
-      .countdown-banner {
+      /* 主要倒數區域 */
+      .stage-card {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      @media (min-width: 993px) {
+        .stage-card {
+          height: calc(100vh - 32px);
+        }
+        .panel-card {
+          height: calc(100vh - 32px);
+          overflow-y: auto;
+        }
+      }
+
+      /* 頂部 Header & 倒數狀態標題 */
+      .header-row {
         display: grid;
-        gap: 8px;
-        align-content: center;
-        min-height: 82px;
-        margin-bottom: 12px;
-        padding: 12px 16px;
-        border: 2px solid rgba(23, 23, 23, 0.45);
-        border-radius: 8px;
-        background:
-          linear-gradient(90deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.92)),
-          repeating-linear-gradient(90deg, var(--orange) 0 24px, var(--yellow) 24px 48px, var(--teal) 48px 72px, var(--red) 72px 96px);
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .course-title {
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 12px;
+        color: var(--text-color);
+        font-size: clamp(18px, 2.2vw, 28px);
+        font-weight: 950;
+        line-height: 1.2;
+        text-align: center;
       }
 
       .badge {
-        width: fit-content;
-        padding: 6px 12px;
-        border: 3px solid var(--ink);
-        border-radius: 999px;
-        background: var(--yellow);
-        box-shadow: 4px 4px 0 var(--ink);
-        font-weight: 900;
-        font-size: 14px;
+        padding: 4px 14px;
+        border: var(--border-width) solid var(--border-color);
+        border-radius: 99px;
+        background: var(--badge-bg);
+        color: var(--badge-text);
+        font-weight: 800;
+        font-size: 13px;
+        box-shadow: var(--btn-shadow);
+        text-transform: uppercase;
       }
 
+      @media (max-width: 700px) {
+        .header-row {
+          grid-template-columns: 1fr;
+        }
+        .badge {
+          justify-self: center;
+        }
+      }
+
+      /* 經典橫式一條線倒數計時橫幅 */
+      .countdown-banner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        min-height: 100px;
+        padding: 14px 20px;
+        border: var(--border-width) solid var(--border-color);
+        border-radius: 12px;
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.92)),
+          repeating-linear-gradient(90deg, rgba(255, 122, 26, 0.1) 0 24px, rgba(255, 210, 63, 0.1) 24px 48px, rgba(0, 155, 158, 0.1) 48px 72px, rgba(230, 50, 63, 0.1) 72px 96px);
+        box-shadow: var(--btn-shadow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      [data-theme="cyberpunk"] .countdown-banner {
+        background: rgba(20, 5, 38, 0.85);
+      }
+      [data-theme="emerald"] .countdown-banner {
+        background: rgba(12, 38, 30, 0.6);
+      }
+      [data-theme="sunset"] .countdown-banner {
+        background: linear-gradient(90deg, rgba(251, 194, 235, 0.2), rgba(166, 193, 238, 0.2));
+      }
+
+      /* 倒數文字樣式 */
       #message {
-        font-size: clamp(28px, 4vw, 56px);
+        font-size: clamp(26px, 4.2vw, 52px);
         font-weight: 950;
-        line-height: 1;
-        text-shadow: 3px 3px 0 rgba(255, 210, 63, 0.75);
+        line-height: 1.1;
+        letter-spacing: -1px;
+        color: var(--text-color);
+        text-transform: uppercase;
+        display: inline-block;
       }
 
+      .message-time {
+        color: var(--timer-color);
+      }
+
+      /* 倒數計時數字的呼吸與動態脈搏效果 */
+      .running #message {
+        animation: textPulse 1s infinite ease-in-out alternate;
+      }
+
+      /* 不同主題下的倒數文字陰影特效 */
+      [data-theme="neobrutalism"].running #message .message-time {
+        text-shadow: 2px 2px 0px var(--accent);
+      }
+      [data-theme="cyberpunk"].running #message .message-time {
+        text-shadow: 0 0 10px rgba(255, 0, 127, 0.8), 0 0 20px rgba(255, 0, 127, 0.4);
+      }
+      [data-theme="emerald"].running #message .message-time {
+        text-shadow: 0 0 8px rgba(0, 255, 170, 0.6);
+      }
+      [data-theme="sunset"].running #message .message-time {
+        text-shadow: 2px 2px 0px rgba(251, 194, 235, 0.8);
+      }
+
+      .sub-message {
+        font-size: 15px;
+        font-weight: 800;
+        opacity: 0.85;
+        margin-top: 4px;
+        letter-spacing: 0.5px;
+      }
+
+      .sub-message.active-message {
+        color: var(--active-message-color);
+      }
+
+      /* 播放器包裝器 - 填滿 Stage 剩餘高度 */
       .player-wrap {
         position: relative;
-        min-height: 360px;
-        border: 2px solid rgba(23, 23, 23, 0.5);
-        border-radius: 8px;
-        overflow: auto;
-        background: #111;
-        box-shadow: inset 0 0 0 10px rgba(255, 210, 63, 0.08);
+        flex-grow: 1;
+        border: var(--border-width) solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+        background: #0d0d0d;
+        box-shadow: inset 0 4px 20px rgba(0,0,0,0.6);
+        min-height: 0; /* 讓 flex 子元素能在高度受限時縮小 */
       }
 
       iframe {
         width: 100%;
         height: 100%;
-        min-height: calc(100vh - 185px);
         border: 0;
         display: block;
-        background: #111;
       }
 
       .empty-player {
         position: absolute;
         inset: 0;
-        display: grid;
-        place-items: center;
-        padding: 14px;
-        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        color: #a0aec0;
         text-align: center;
-        background:
-          radial-gradient(circle at 30% 30%, rgba(255, 210, 63, 0.25), transparent 24%),
-          radial-gradient(circle at 70% 65%, rgba(230, 50, 63, 0.25), transparent 22%),
-          #111;
-        font-size: clamp(22px, 3vw, 40px);
-        font-weight: 950;
+        background: radial-gradient(circle at center, #1a1525 0%, #0d0d0d 100%);
+        font-size: clamp(16px, 2vw, 20px);
+        font-weight: 700;
+        gap: 12px;
       }
 
-      .panel {
-        align-self: start;
-        padding: 14px;
+      .empty-player svg {
+        width: 48px;
+        height: 48px;
+        fill: currentColor;
+        opacity: 0.5;
+        animation: pulse 2s infinite ease-in-out;
+      }
+
+      /* 側邊欄控制面板 */
+      .panel-card {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
       }
 
       h1 {
-        margin: 0 0 14px;
-        font-size: 26px;
-        line-height: 1;
+        margin: 0;
+        font-size: 20px;
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
-      .section {
-        display: grid;
-        gap: 12px;
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 2px solid rgba(23, 23, 23, 0.75);
+      .status-box {
+        padding: 8px 12px;
+        border: var(--border-width) solid var(--border-color);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        font-weight: 800;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #718096;
+      }
+
+      .status-active {
+        background: #48bb78;
+        animation: blink 1s infinite alternate;
+      }
+
+      .section-title {
+        font-size: 13px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+        opacity: 0.9;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        border-top: 1px dashed rgba(128,128,128,0.2);
+        padding-top: 10px;
       }
 
       label {
-        display: grid;
-        gap: 7px;
-        font-weight: 900;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-weight: 700;
+        font-size: 13px;
       }
 
-      input {
+      input, select {
         width: 100%;
-        min-height: 42px;
-        border: 2px solid rgba(23, 23, 23, 0.75);
+        min-height: 36px;
+        border: var(--border-width) solid var(--border-color);
         border-radius: 8px;
-        padding: 0 13px;
-        background: white;
-        color: var(--ink);
-        font: inherit;
-        font-size: 14px;
-        font-weight: 800;
+        padding: 0 10px;
+        background: #ffffff;
+        color: #1a1a1a;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        outline: none;
       }
 
-      .time-row {
+      input:focus, select:focus {
+        border-color: var(--accent);
+      }
+
+      .custom-message-input[hidden] {
+        display: none;
+      }
+
+      .row-wrap {
         display: grid;
         grid-template-columns: 1fr auto;
-        gap: 10px;
+        gap: 6px;
         align-items: end;
       }
 
-      .buttons {
+      /* 自訂雙下拉選單時間選擇器列 */
+      .time-picker-row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr auto;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .time-select {
+        text-align: center;
+        padding: 0 8px;
+        cursor: pointer;
+      }
+
+      .time-separator {
+        font-weight: 900;
+        font-size: 18px;
+        color: var(--text-color);
+        padding: 0 2px;
+      }
+
+      /* 快速設定按鈕群組 */
+      .preset-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 4px;
+      }
+
+      .preset-btn {
+        min-height: 30px;
+        border: 2px solid var(--border-color);
+        border-radius: 6px;
+        background: rgba(255,255,255,0.06);
+        color: var(--text-color);
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .preset-btn:hover {
+        background: var(--accent);
+        color: #1a1a1a;
+      }
+
+      /* 主控制按鈕 */
+      .action-buttons {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        gap: 6px;
       }
 
-      button {
-        min-height: 42px;
-        border: 2px solid rgba(23, 23, 23, 0.75);
+      button.action-btn {
+        min-height: 38px;
+        border: var(--border-width) solid var(--border-color);
         border-radius: 8px;
-        color: var(--ink);
-        font: inherit;
-        font-size: 15px;
-        font-weight: 950;
-        cursor: pointer;
-        box-shadow: none;
-        transition: transform 0.12s ease, box-shadow 0.12s ease;
-      }
-
-      button:hover {
-        transform: translate(2px, 2px);
-        box-shadow: none;
-      }
-
-      button:active {
-        transform: translate(1px, 1px);
-        box-shadow: none;
-      }
-
-      .start { background: var(--green); }
-      .pause { background: var(--yellow); }
-      .reset { background: var(--red); color: white; }
-      .load { background: var(--blue); color: white; }
-      .wide { grid-column: 1 / -1; }
-
-      .status {
-        padding: 12px;
-        border: 2px solid rgba(23, 23, 23, 0.6);
-        border-radius: 8px;
-        background: white;
+        color: var(--color-btn-text);
+        font-family: inherit;
+        font-size: 14px;
         font-weight: 900;
+        cursor: pointer;
+        box-shadow: var(--btn-shadow);
+        transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
       }
 
-      .ended .stage {
-        animation: popPulse 0.8s ease-in-out infinite alternate;
+      button.action-btn:hover {
+        transform: var(--btn-hover-transform);
+        box-shadow: none;
       }
 
+      button.action-btn:active {
+        transform: var(--btn-active-transform);
+        box-shadow: none;
+      }
+
+      .btn-start { background: var(--color-start); }
+      .btn-pause { background: var(--color-pause); }
+      .btn-resume { background: var(--color-pause); }
+      .btn-reset { background: var(--color-reset); color: #ffffff; }
+      
+      .btn-apply {
+        background: var(--accent);
+        min-height: 36px;
+        padding: 0 12px;
+        border: var(--border-width) solid var(--border-color);
+        border-radius: 8px;
+        font-weight: 800;
+        cursor: pointer;
+        color: #1a1a1a;
+      }
+
+      .btn-load {
+        background: var(--accent);
+        color: #1a1a1a;
+        width: 100%;
+        margin-top: 4px;
+      }
+
+      /* 主題切換與進階設定 */
+      .theme-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
+      }
+
+      .theme-btn {
+        min-height: 32px;
+        border: 2px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1a1a1a;
+      }
+      .t-neo { background: #ffd23f; }
+      .t-cyber { background: #ff007f; color: white; }
+      .t-eme { background: #34d399; }
+      .t-sun { background: #fbc2eb; }
+
+      .theme-btn.active {
+        outline: 3px solid #3182ce;
+      }
+
+      /* 結束動態特效 */
+      .ended .stage-card {
+        animation: popPulse 0.4s ease-in-out infinite alternate;
+      }
+
+      /* 倒數結束時，統一改為警示紅色與震動效果 */
       .ended #message {
-        color: var(--red);
+        color: #e6323f !important;
+        animation: textShake 0.4s infinite;
+        text-shadow: none !important;
       }
 
-      @media (max-width: 980px) {
-        body { overflow: auto; }
-        .app {
-          grid-template-columns: 1fr;
-        }
-        .stage {
-          min-height: auto;
-        }
-        iframe {
-          min-height: 360px;
-        }
+      [data-theme="cyberpunk"].ended #message {
+        text-shadow: 0 0 10px #e6323f, 0 0 20px #e6323f !important;
       }
 
-      @media (max-width: 560px) {
-        .app { padding: 16px; }
-        .buttons,
-        .time-row { grid-template-columns: 1fr; }
+      /* 提示音與音效列 */
+      .sound-test-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 6px;
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.4; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+      }
+
+      @keyframes blink {
+        from { opacity: 0.4; }
+        to { opacity: 1; }
       }
 
       @keyframes popPulse {
-        from { transform: rotate(-0.35deg) scale(1); }
-        to { transform: rotate(0.35deg) scale(1.01); }
+        from { transform: scale(1); }
+        to { transform: scale(1.015); }
+      }
+
+      @keyframes textPulse {
+        from { transform: scale(0.98); }
+        to { transform: scale(1.02); }
+      }
+
+      @keyframes textShake {
+        0% { transform: translate(1px, 1px) rotate(0deg); }
+        10% { transform: translate(-1px, -2px) rotate(-1deg); }
+        20% { transform: translate(-3px, 0px) rotate(1deg); }
+        30% { transform: translate(0px, 2px) rotate(0deg); }
+        40% { transform: translate(1px, -1px) rotate(1deg); }
+        50% { transform: translate(-1px, 2px) rotate(-1deg); }
+        60% { transform: translate(-3px, 1px) rotate(0deg); }
+        70% { transform: translate(2px, 1px) rotate(-1deg); }
+        80% { transform: translate(-1px, -1px) rotate(1deg); }
+        90% { transform: translate(2px, 2px) rotate(0deg); }
+        100% { transform: translate(1px, -2px) rotate(-1deg); }
+      }
+
+      /* 響應式佈局 */
+      @media (max-width: 992px) {
+        .app {
+          grid-template-columns: 1fr;
+          padding: 8px;
+        }
+        .stage-card {
+          min-height: auto;
+        }
+        .player-wrap {
+          height: 340px;
+        }
       }
     </style>
   </head>
   <body>
+    <!-- 煙火/碎紙屑畫布 -->
     <canvas id="confetti"></canvas>
+    
     <main class="app">
-      <section class="stage" aria-live="polite">
+      <!-- 左側：倒數計時主要舞台 -->
+      <section class="card stage-card" aria-live="polite">
+        <header class="header-row">
+          <div class="badge" id="themeBadge">亮黃</div>
+          <div class="course-title" id="courseTitle"></div>
+          <div class="badge" id="timeEndBadge">00:00 上課</div>
+        </header>
+
+        <!-- 經典橫式單行倒數計時橫幅 -->
         <div class="countdown-banner">
-          <div id="message">距離上課還有 10:00</div>
+          <div id="message">距離上課還有 <span class="message-time">10:00</span></div>
+          <div id="subMessage" class="sub-message active-message">大家休息一下，喝口水、動一動！</div>
         </div>
 
+        <!-- 播放器區塊 -->
         <div class="player-wrap">
-          <iframe id="youtubePlayer" title="YouTube 播放清單播放器" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-          <div id="emptyPlayer" class="empty-player">請在右側貼上 YouTube 播放清單連結</div>
+          <div id="youtubePlayer"></div>
+          <div id="emptyPlayer" class="empty-player">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.507a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.87.507 9.388.507 9.388.507s7.518 0 9.388-.507a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            <span>請在右側控制台載入影片或播放清單</span>
+          </div>
         </div>
       </section>
 
-      <aside class="panel">
-        <h1>休息倒數控制台</h1>
-        <div id="status" class="status">尚未開始</div>
+      <!-- 右側：控制面板 -->
+      <aside class="card panel-card">
+        <h1>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          休息倒數控制台
+        </h1>
+        
+        <div id="statusBox" class="status-box">
+          <div class="status-indicator" id="statusIndicator"></div>
+          <span id="statusText">等待開始</span>
+        </div>
 
-        <section class="section">
-          <label>
-            倒數時間設定(分)
-            <div class="time-row">
-              <input id="minutesInput" type="number" min="1" max="180" step="1" value="10" />
-              <button id="applyBtn" class="pause" type="button">套用</button>
-            </div>
-          </label>
-
-          <label>
-            目標時間設定
-            <div class="time-row">
-              <input id="targetTimeInput" type="time" value="23:00" />
-              <button id="targetTimeBtn" class="pause" type="button">套用</button>
-            </div>
-          </label>
-
-          <div class="buttons">
-            <button id="startBtn" class="start" type="button">開始</button>
-            <button id="pauseBtn" class="pause" type="button">暫停</button>
-            <button id="resumeBtn" class="pause" type="button">繼續</button>
-            <button id="resetBtn" class="reset" type="button">重設</button>
+        <!-- 主題風格切換 -->
+        <div class="control-group">
+          <div class="section-title">🎨 主題風格切換</div>
+          <div class="theme-grid">
+            <button class="theme-btn t-neo active" data-theme-id="neobrutalism">亮黃</button>
+            <button class="theme-btn t-cyber" data-theme-id="cyberpunk">霓虹</button>
+            <button class="theme-btn t-emerald" data-theme-id="emerald">翡翠</button>
+            <button class="theme-btn t-sunset" data-theme-id="sunset">暖陽</button>
           </div>
-        </section>
+        </div>
 
-        <section class="section">
+        <!-- 時間與快速按鈕 -->
+        <div class="control-group">
+          <div class="section-title">⏱️ 倒數時間設定</div>
+          
           <label>
-            YouTube 播放清單貼入連結設定
-            <input id="playlistInput" type="url" placeholder="貼上播放清單網址或 playlist ID" value="https://www.youtube.com/watch?v=4aizyAaIRrA&amp;list=PLFeHIx8c8FmAoYBz2MOYcujqJm-ha-iTE&amp;index=21" />
+            快速選擇時間
+            <div class="preset-grid">
+              <button class="preset-btn" data-preset="3">3分</button>
+              <button class="preset-btn" data-preset="5">5分</button>
+              <button class="preset-btn" data-preset="10">10分</button>
+              <button class="preset-btn" data-preset="15">15分</button>
+              <button class="preset-btn" data-preset="20">20分</button>
+            </div>
           </label>
-          <button id="loadPlaylistBtn" class="load" type="button">載入播放清單</button>
-        </section>
+
+          <label>
+            手動設定分鐘
+            <div class="row-wrap">
+              <input id="minutesInput" type="number" min="1" max="180" step="1" value="10" />
+              <button id="applyBtn" class="btn-apply" type="button">設定</button>
+            </div>
+          </label>
+
+          <label>
+            設定目標上課時間
+            <div class="time-picker-row">
+              <select id="targetHourSelect" class="time-select"></select>
+              <span class="time-separator">:</span>
+              <select id="targetMinuteSelect" class="time-select"></select>
+              <button id="targetTimeBtn" class="btn-apply" type="button">設定</button>
+            </div>
+          </label>
+        </div>
+
+        <!-- 計時器主按鈕 -->
+        <div class="control-group">
+          <div class="section-title">🎮 計時器控制</div>
+          <div class="action-buttons">
+            <button id="startBtn" class="action-btn btn-start" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              開始
+            </button>
+            <button id="pauseBtn" class="action-btn btn-pause" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="4" x2="18" y2="20"></line><line x1="6" y1="4" x2="6" y2="20"></line></svg>
+              暫停
+            </button>
+            <button id="resumeBtn" class="action-btn btn-pause" style="display:none;" type="button">繼續</button>
+            <button id="resetBtn" class="action-btn btn-reset" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+              重設
+            </button>
+          </div>
+        </div>
+
+        <!-- 音效設定 -->
+        <div class="control-group">
+          <div class="section-title">🔊 結束提示音效</div>
+          <label>
+            選擇音效類型
+            <div class="sound-test-row">
+              <select id="soundSelect">
+                <option value="westminster" selected>台灣學校西敏寺鐘聲 (噹噹噹咚~)</option>
+                <option value="classic_bell">傳統打擊警示鈴 (鐺鐺鐺鐺...)</option>
+                <option value="chime">優雅水晶和弦</option>
+                <option value="beep">電子嗶嗶警示音</option>
+                <option value="none">無音效 (靜音)</option>
+              </select>
+              <button id="testSoundBtn" class="btn-apply" type="button">測試</button>
+            </div>
+          </label>
+        </div>
+
+        <!-- 結束自訂訊息 -->
+        <div class="control-group">
+          <div class="section-title">💬 自訂顯示訊息</div>
+          <label>
+            課程名稱
+            <select id="courseSelect">
+              <option value="">不顯示課程名稱</option>
+              <option>1.AI+Canva行銷設計-花蓮(7/13~9/14)</option>
+              <option>2.創業設計力：Canva視覺行銷實戰-基隆(4/14~8/4)</option>
+              <option>3.視覺獲客術：Canva設計×LINE@ 精準行銷-高雄(5/6~8/26)</option>
+              <option>4.新職場實戰力:AI科技應用-台中(5/7~8/27)</option>
+              <option>5.新職場力：AI工作革命-新北(5/9~8/29)</option>
+              <option>6.創業加速器:AI科技應用-台北(9/21~12/14)</option>
+              <option>7.職場升級力：AI應用實戰課-基隆(8/11~10/27)</option>
+              <option>8.領跑未來：AI高效工作實戰課-高雄(9/2~10/28)</option>
+              <option>9.創業吸客術:AI+Canva平面設計-新北(9/12~11/28)</option>
+              <option>10.創業加速器:Canva行銷設計-台北(3/16~5/25)</option>
+            </select>
+          </label>
+          <label>
+            倒數時顯示文字
+            <select id="activeMessageSelect">
+              <option>快要上課囉，趕快去點名網站完成報到</option>
+              <option selected>大家休息一下，喝口水、動一動！</option>
+              <option value="custom">自訂....</option>
+            </select>
+            <input id="activeMessageInput" class="custom-message-input" type="text" value="" placeholder="請輸入倒數時顯示文字" hidden />
+          </label>
+          <label>
+            倒數結束顯示文字
+            <select id="endMessageSelect">
+              <option selected>上課囉! 趕快回到位子上面~</option>
+              <option value="custom">自訂....</option>
+            </select>
+            <input id="endMessageInput" class="custom-message-input" type="text" value="" placeholder="請輸入倒數結束顯示文字" hidden />
+          </label>
+        </div>
+
+        <!-- YouTube 影片設定 -->
+        <div class="control-group">
+          <div class="section-title">📺 YouTube 影片/播放清單設定</div>
+          <label>
+            貼上自訂連結 (YouTube 影片或播放清單網址)
+            <input id="playlistInput" type="url" placeholder="貼上 YouTube 網址或影片 ID" value="https://www.youtube.com/watch?v=4aizyAaIRrA&amp;list=PLFeHIx8c8FmAoYBz2MOYcujqJm-ha-iTE&amp;index=21" />
+          </label>
+          <button id="loadPlaylistBtn" class="action-btn btn-load" type="button">載入影片/播放清單</button>
+        </div>
       </aside>
     </main>
 
+    <!-- 載入 YouTube API (用於倒數開始/暫停時控制影片播放) -->
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+      // 綁定 DOM 元素
       const minutesInput = document.querySelector("#minutesInput");
       const applyBtn = document.querySelector("#applyBtn");
-      const targetTimeInput = document.querySelector("#targetTimeInput");
+      const targetHourSelect = document.querySelector("#targetHourSelect");
+      const targetMinuteSelect = document.querySelector("#targetMinuteSelect");
       const targetTimeBtn = document.querySelector("#targetTimeBtn");
       const startBtn = document.querySelector("#startBtn");
       const pauseBtn = document.querySelector("#pauseBtn");
@@ -346,20 +851,73 @@
       const resetBtn = document.querySelector("#resetBtn");
       const playlistInput = document.querySelector("#playlistInput");
       const loadPlaylistBtn = document.querySelector("#loadPlaylistBtn");
+      const soundSelect = document.querySelector("#soundSelect");
+      const testSoundBtn = document.querySelector("#testSoundBtn");
+      
       const message = document.querySelector("#message");
-      const statusText = document.querySelector("#status");
-      const player = document.querySelector("#youtubePlayer");
+      const subMessage = document.querySelector("#subMessage");
+      const courseTitle = document.querySelector("#courseTitle");
+      const courseSelect = document.querySelector("#courseSelect");
+      const activeMessageSelect = document.querySelector("#activeMessageSelect");
+      const activeMessageInput = document.querySelector("#activeMessageInput");
+      const endMessageSelect = document.querySelector("#endMessageSelect");
+      const endMessageInput = document.querySelector("#endMessageInput");
+      
+      const statusText = document.querySelector("#statusText");
+      const statusIndicator = document.querySelector("#statusIndicator");
       const emptyPlayer = document.querySelector("#emptyPlayer");
+      const timeEndBadge = document.querySelector("#timeEndBadge");
+      const themeBadge = document.querySelector("#themeBadge");
       const canvas = document.querySelector("#confetti");
       const ctx = canvas.getContext("2d");
 
-      let duration = 10 * 60;
+      // 計時器變數
+      let duration = 10 * 60; // 預設 10 分鐘
       let remaining = duration;
       let timerId = null;
       let isRunning = false;
+      let endTime = null;
+      let targetLabel = "";
+      let pinnedClassTime = "";
+      
+      // YouTube API 播放器變數
+      let ytPlayer = null;
+      let ytPlayerReady = false;
+      
+      // 煙火特效變數
       let confettiId = null;
       let confettiPieces = [];
-      let targetLabel = "";
+      let alarmRepeatId = null;
+
+      // 初始化下拉時間選單、時間徽章
+      initTargetTimeSelectors();
+      updateEndBadge();
+
+      // 建立 Hour/Minute 雙下拉選單 (風格與輸入框一致)
+      function initTargetTimeSelectors() {
+        // 時 00-23
+        targetHourSelect.innerHTML = "";
+        for (let h = 0; h < 24; h++) {
+          const opt = document.createElement("option");
+          opt.value = pad(h);
+          opt.textContent = pad(h) + " 時";
+          targetHourSelect.appendChild(opt);
+        }
+        
+        // 分 00-59
+        targetMinuteSelect.innerHTML = "";
+        for (let m = 0; m < 60; m++) {
+          const opt = document.createElement("option");
+          opt.value = pad(m);
+          opt.textContent = pad(m) + " 分";
+          targetMinuteSelect.appendChild(opt);
+        }
+        
+        // 預設選取目前時間
+        const now = new Date();
+        targetHourSelect.value = pad(now.getHours());
+        targetMinuteSelect.value = pad(now.getMinutes());
+      }
 
       function resizeCanvas() {
         canvas.width = window.innerWidth * window.devicePixelRatio;
@@ -371,100 +929,245 @@
         return String(value).padStart(2, "0");
       }
 
+      function stripCourseNumber(text) {
+        return text.replace(/^\d+\./, "");
+      }
+
+      function updateCourseTitle() {
+        courseTitle.textContent = stripCourseNumber(courseSelect.value);
+      }
+
+      function syncCustomMessageInput(selectEl, inputEl) {
+        const isCustom = selectEl.value === "custom";
+        inputEl.hidden = !isCustom;
+        if (isCustom) {
+          inputEl.focus();
+        }
+      }
+
+      function getSelectedMessage(selectEl, inputEl, fallback) {
+        if (selectEl.value === "custom") {
+          return inputEl.value.trim() || fallback;
+        }
+        return selectEl.value || fallback;
+      }
+
+      function getActiveMessage() {
+        return getSelectedMessage(activeMessageSelect, activeMessageInput, "大家休息一下，喝口水、動一動！");
+      }
+
+      function getEndMessage() {
+        return getSelectedMessage(endMessageSelect, endMessageInput, "上課囉! 趕快回到位子上面~");
+      }
+
+      // 更新上課時間徽章
+      function updateEndBadge() {
+        if (pinnedClassTime) {
+          timeEndBadge.textContent = `${pinnedClassTime} 上課`;
+          return;
+        }
+
+        const now = new Date();
+        const end = new Date(now.getTime() + remaining * 1000);
+        timeEndBadge.textContent = `${pad(end.getHours())}:${pad(end.getMinutes())} 上課`;
+      }
+
+      // 渲染計時器文字與狀態
       function render() {
         const minutes = Math.floor(remaining / 60);
         const seconds = remaining % 60;
-        message.textContent = remaining === 0 ? "上課囉! 趕快回到位子上面~" : `距離上課還有 ${pad(minutes)}:${pad(seconds)}`;
-        statusText.textContent = remaining === 0 ? "倒數結束" : targetLabel ? `${targetLabel}，${isRunning ? "倒數中" : "已暫停 / 待機"}` : isRunning ? "倒數中" : "已暫停 / 待機";
+        
+        if (remaining === 0) {
+          message.textContent = "時間到！";
+          subMessage.classList.remove("active-message");
+          subMessage.textContent = getEndMessage();
+          statusText.textContent = "倒數結束";
+          statusIndicator.className = "status-indicator";
+        } else {
+          message.innerHTML = `距離上課還有 <span class="message-time">${pad(minutes)}:${pad(seconds)}</span>`;
+          subMessage.classList.add("active-message");
+          subMessage.textContent = getActiveMessage();
+          if (isRunning) {
+            statusText.textContent = targetLabel ? `倒數中 (目標 ${targetLabel})` : "倒數計時中";
+            statusIndicator.className = "status-indicator status-active";
+          } else {
+            statusText.textContent = "待機中 / 已暫停";
+            statusIndicator.className = "status-indicator";
+          }
+        }
       }
 
+      // 手動套用分鐘
       function readDuration() {
         const minutes = Math.max(1, Math.min(180, Number.parseInt(minutesInput.value, 10) || 10));
         minutesInput.value = minutes;
         duration = minutes * 60;
         remaining = duration;
-        targetLabel = "";
-        stopTimer();
-        stopConfetti();
-        document.body.classList.remove("ended");
+        
+        resetTimerState();
         render();
+        updateEndBadge();
       }
 
-      
+      // 套用目標時間 (改為讀取 Hour/Minute 選單)
       function applyTargetTime() {
-        const value = targetTimeInput.value;
-        if (!value) {
-          statusText.textContent = "請先選擇目標時間";
-          return;
-        }
-
-        const [hours, minutes] = value.split(":").map(Number);
+        const hourVal = targetHourSelect.value;
+        const minuteVal = targetMinuteSelect.value;
+        
         const now = new Date();
         const target = new Date(now);
-        target.setHours(hours, minutes, 0, 0);
+        target.setHours(Number(hourVal), Number(minuteVal), 0, 0);
         if (target <= now) {
-          target.setDate(target.getDate() + 1);
+          target.setDate(target.getDate() + 1); // 跨天
         }
 
         duration = Math.max(1, Math.round((target - now) / 1000));
         remaining = duration;
-        targetLabel = `目標 ${value}`;
-        stopTimer();
-        stopConfetti();
-        document.body.classList.remove("ended");
+        targetLabel = `${hourVal}:${minuteVal}`;
+        pinnedClassTime = targetLabel;
+        
+        resetTimerState();
         render();
+        updateEndBadge();
       }
-      function stopTimer() {
+
+      // 重設計時器狀態
+      function resetTimerState() {
         clearInterval(timerId);
         timerId = null;
         isRunning = false;
+        document.body.classList.remove("ended", "running");
+        pauseBtn.style.display = "inline-flex";
+        resumeBtn.style.display = "none";
+        stopAlarmRepeat();
+        stopConfetti();
+        
+        // 停止影片
+        controlVideo("stop");
       }
 
+      // 精準倒數 tick 方法
+      function tick() {
+        if (!isRunning) return;
+        
+        const now = Date.now();
+        remaining = Math.max(0, Math.round((endTime - now) / 1000));
+        
+        render();
+        
+        if (remaining === 0) {
+          clearInterval(timerId);
+          timerId = null;
+          isRunning = false;
+          document.body.classList.add("ended");
+          document.body.classList.remove("running");
+          statusIndicator.className = "status-indicator";
+          
+          // 停止影片並重複播放鐘聲
+          controlVideo("stop");
+          startAlarmRepeat(soundSelect.value);
+          startConfetti();
+        }
+      }
+
+      // 開始倒數
       function startTimer() {
+        if (isRunning) return;
+        
         if (remaining <= 0) {
           remaining = duration;
-          stopConfetti();
           document.body.classList.remove("ended");
+          stopAlarmRepeat();
+          stopConfetti();
         }
-        if (timerId) return;
+        
+        // 用目前時間加上剩餘時間，做精準校正
+        endTime = Date.now() + remaining * 1000;
         isRunning = true;
-        render();
-        timerId = setInterval(() => {
-          remaining = Math.max(0, remaining - 1);
-          render();
-          if (remaining === 0) {
-            stopTimer();
-            document.body.classList.add("ended");
-            startConfetti();
-            render();
-          }
-        }, 1000);
+        document.body.classList.add("running");
+        
+        pauseBtn.style.display = "inline-flex";
+        resumeBtn.style.display = "none";
+        
+        tick();
+        timerId = setInterval(tick, 200);
+        updateEndBadge();
+        
+        // 自動播放影片
+        controlVideo("play");
       }
 
+      // 暫停倒數
       function pauseTimer() {
-        if (!timerId) return;
-        stopTimer();
+        if (!isRunning) return;
+        isRunning = false;
+        clearInterval(timerId);
+        timerId = null;
+        document.body.classList.remove("running");
+        
+        pauseBtn.style.display = "none";
+        resumeBtn.style.display = "inline-flex";
         render();
+        
+        // 自動暫停影片
+        controlVideo("pause");
       }
 
+      // 重設計時器
       function resetTimer() {
-        stopTimer();
+        resetTimerState();
         remaining = duration;
-        stopConfetti();
-        document.body.classList.remove("ended");
         render();
+        updateEndBadge();
+        controlVideo("stop");
       }
 
+      // --- YouTube Iframe Player API 控制影片邏輯 ---
+      window.onYouTubeIframeAPIReady = function() {
+        loadPlaylist();
+      };
+
+      // 控制影片播放/暫停/停止
+      function controlVideo(action) {
+        if (ytPlayerReady && ytPlayer && typeof ytPlayer.playVideo === "function") {
+          try {
+            if (action === "play") {
+              ytPlayer.playVideo();
+            } else if (action === "pause") {
+              ytPlayer.pauseVideo();
+            } else if (action === "stop") {
+              ytPlayer.stopVideo();
+            }
+            return;
+          } catch (e) {
+            console.warn("YouTube API call failed: ", e);
+          }
+        }
+        
+        // 備用方案：如果 API 未準備妥當，嘗試手動重載 iframe 來停止聲音
+        const iframe = document.querySelector("#youtubePlayer");
+        if (iframe && action === "stop") {
+          const src = iframe.src;
+          iframe.src = "";
+          iframe.src = src; 
+        }
+      }
+
+      // YouTube 輸入解析
       function parseYouTubeInput(value) {
         const input = value.trim();
         if (!input) return { listId: "", videoId: "" };
+        
         if (/^[a-zA-Z0-9_-]{10,}$/.test(input) && !input.includes("http")) {
-          return { listId: input, videoId: "" };
+          if (input.startsWith("PL")) return { listId: input, videoId: "" };
+          return { listId: "", videoId: input };
         }
+        
         try {
           const url = new URL(input);
           const listId = url.searchParams.get("list") || "";
           let videoId = url.searchParams.get("v") || "";
+          
           if (!videoId && url.pathname.includes("/embed/")) {
             videoId = url.pathname.split("/embed/")[1]?.split("/")[0] || "";
           }
@@ -478,23 +1181,305 @@
       }
 
       function buildEmbedUrl({ listId, videoId }) {
-        const params = new URLSearchParams({ rel: "0", autoplay: "0", playsinline: "1" });
-        if (listId) params.set("list", listId);
-        if (videoId) return `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?${params.toString()}`;
-        return `https://www.youtube.com/embed/videoseries?${params.toString()}`;
+        const params = new URLSearchParams({ 
+          rel: "0", 
+          autoplay: "0", 
+          playsinline: "1", 
+          enablejsapi: "1" 
+        });
+        
+        if (listId) {
+          params.set("listType", "playlist");
+          params.set("list", listId);
+        }
+        
+        if (videoId) {
+          return `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?${params.toString()}`;
+        }
+        if (listId) {
+          return `https://www.youtube.com/embed/videoseries?${params.toString()}`;
+        }
+        return "";
       }
 
+      // 載入影片播放器 (建立並初始化 YT Player 實體)
       function loadPlaylist() {
         const parsed = parseYouTubeInput(playlistInput.value);
         if (!parsed.listId && !parsed.videoId) {
-          statusText.textContent = "找不到播放清單或影片 ID，請確認連結包含 list= 或 v=";
+          statusText.textContent = "無法解析該連結，請輸入正確的 YouTube 網址";
           return;
         }
-        player.src = buildEmbedUrl(parsed);
+
         emptyPlayer.style.display = "none";
-        statusText.textContent = parsed.listId ? "播放清單已載入" : "影片已載入";
+        ytPlayerReady = false;
+
+        // 如果已存在舊的 Player，則先將其銷毀
+        if (ytPlayer) {
+          try {
+            ytPlayer.destroy();
+          } catch (e) {
+            console.warn(e);
+          }
+          ytPlayer = null;
+        }
+
+        // 清空容器並建立 placeholder div
+        const playerWrap = document.querySelector(".player-wrap");
+        playerWrap.innerHTML = '<div id="youtubePlayer"></div>';
+
+        const playerVars = {
+          rel: 0,
+          autoplay: isRunning ? 1 : 0,
+          playsinline: 1,
+          enablejsapi: 1
+        };
+
+        if (parsed.listId) {
+          playerVars.listType = "playlist";
+          playerVars.list = parsed.listId;
+        }
+
+        try {
+          ytPlayer = new YT.Player('youtubePlayer', {
+            height: '100%',
+            width: '100%',
+            videoId: parsed.videoId || undefined,
+            playerVars: playerVars,
+            events: {
+              'onReady': () => {
+                ytPlayerReady = true;
+                statusText.textContent = parsed.listId ? "影片播放清單已載入" : "單一影片已載入";
+                if (isRunning) {
+                  ytPlayer.playVideo();
+                }
+              },
+              'onError': (e) => {
+                console.error("YT Player Error:", e.data);
+                fallbackStandardIframe(parsed);
+              }
+            }
+          });
+        } catch (e) {
+          console.warn("YouTube API init failed, using fallback:", e);
+          fallbackStandardIframe(parsed);
+        }
       }
 
+      function fallbackStandardIframe(parsed) {
+        const playerWrap = document.querySelector(".player-wrap");
+        const embedUrl = buildEmbedUrl(parsed);
+        playerWrap.innerHTML = `<iframe id="youtubePlayer" src="${embedUrl}" title="YouTube 播放器" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+      }
+
+      // --- Web Audio API 敲擊鐘聲與西敏寺鐘聲合成 (超高音量 + 動態壓縮防止破音版本) ---
+      function getAlarmRepeatDelay(type) {
+        if (type === "westminster") return 8500;
+        if (type === "classic_bell") return 2800;
+        if (type === "chime") return 2200;
+        if (type === "beep") return 1400;
+        return 0;
+      }
+
+      function startAlarmRepeat(type) {
+        stopAlarmRepeat();
+        if (type === "none") return;
+
+        playAlarmSound(type);
+        const delay = getAlarmRepeatDelay(type);
+        if (delay > 0) {
+          alarmRepeatId = setInterval(() => {
+            playAlarmSound(type);
+          }, delay);
+        }
+      }
+
+      function stopAlarmRepeat() {
+        if (alarmRepeatId) {
+          clearInterval(alarmRepeatId);
+          alarmRepeatId = null;
+        }
+      }
+
+      function playAlarmSound(type) {
+        try {
+          if (type === "none") return;
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          const audioCtx = new AudioContext();
+          const now = audioCtx.currentTime;
+
+          // 1. 建立動態壓縮器 (DynamicsCompressorNode)：防止多個發聲器疊加導致爆音/破音
+          const compressor = audioCtx.createDynamicsCompressor();
+          compressor.threshold.setValueAtTime(-12, now); // 低於 -12dB 開始壓縮
+          compressor.knee.setValueAtTime(30, now);
+          compressor.ratio.setValueAtTime(12, now);      // 強力壓縮比例
+          compressor.attack.setValueAtTime(0.003, now);  // 快速響應
+          compressor.release.setValueAtTime(0.25, now);  // 快速釋放
+
+          // 2. 建立 3 倍增益放大器 (GainNode)：配合壓縮器，顯著提升人耳聽覺的「響度」與「音量」達 3 倍。
+          const boostGain = audioCtx.createGain();
+          boostGain.gain.setValueAtTime(3.0, now);
+
+          // 連接至喇叭：[音源] -> compressor -> boostGain -> 喇叭
+          compressor.connect(boostGain);
+          boostGain.connect(audioCtx.destination);
+
+          if (type === "westminster") {
+            // 台灣學校西敏寺鐘聲 (Mi-Do-Re-Sol, Sol-Re-Mi-Do) 
+            const melody = [
+              { f: 659.25, d: 0.75 }, // Mi (E5)
+              { f: 523.25, d: 0.75 }, // Do (C5)
+              { f: 587.33, d: 0.75 }, // Re (D5)
+              { f: 392.00, d: 1.2 },  // Sol (G4)
+              { f: 392.00, d: 0.75 }, // Sol (G4)
+              { f: 587.33, d: 0.75 }, // Re (D5)
+              { f: 659.25, d: 0.75 }, // Mi (E5)
+              { f: 523.25, d: 1.5 }   // Do (C5)
+            ];
+
+            let time = now;
+            melody.forEach((note) => {
+              // 基音 (將正弦波改成三角波 triangle，諧波更豐富，聽覺音量顯著提升，更有銅鐘的紮實感)
+              const osc1 = audioCtx.createOscillator();
+              const gain1 = audioCtx.createGain();
+              osc1.type = "triangle";
+              osc1.frequency.setValueAtTime(note.f, time);
+              
+              // 泛音 1 (1倍高八度，增加清脆金屬聲)
+              const osc2 = audioCtx.createOscillator();
+              const gain2 = audioCtx.createGain();
+              osc2.type = "sine";
+              osc2.frequency.setValueAtTime(note.f * 2, time);
+              
+              // 泛音 2 (1.5倍五度音，提供實體銅鐘共鳴的不諧和感)
+              const osc3 = audioCtx.createOscillator();
+              const gain3 = audioCtx.createGain();
+              osc3.type = "sine";
+              osc3.frequency.setValueAtTime(note.f * 3, time);
+
+              // 聲音包絡線設定 (模擬實體銅鐘敲擊：0.01 秒極快打擊 -> 漫長共鳴衰減)
+              gain1.gain.setValueAtTime(0, time);
+              gain1.gain.linearRampToValueAtTime(0.9, time + 0.015);
+              gain1.gain.exponentialRampToValueAtTime(0.001, time + note.d);
+
+              gain2.gain.setValueAtTime(0, time);
+              gain2.gain.linearRampToValueAtTime(0.4, time + 0.01);
+              gain2.gain.exponentialRampToValueAtTime(0.001, time + note.d * 0.7);
+
+              gain3.gain.setValueAtTime(0, time);
+              gain3.gain.linearRampToValueAtTime(0.2, time + 0.01);
+              gain3.gain.exponentialRampToValueAtTime(0.001, time + note.d * 0.5);
+
+              // 全部連線至壓縮器 (防止疊加爆音)
+              osc1.connect(gain1); gain1.connect(compressor);
+              osc2.connect(gain2); gain2.connect(compressor);
+              osc3.connect(gain3); gain3.connect(compressor);
+
+              osc1.start(time);
+              osc2.start(time);
+              osc3.start(time);
+
+              osc1.stop(time + note.d + 0.1);
+              osc2.stop(time + note.d + 0.1);
+              osc3.stop(time + note.d + 0.1);
+
+              time += 0.88; 
+            });
+          } else if (type === "classic_bell") {
+            // 傳統敲擊鐘聲 (鐺鐺鐺鐺... 快速敲擊 12 次)
+            const count = 12;
+            const interval = 0.18;
+            for (let i = 0; i < count; i++) {
+              const time = now + i * interval;
+              const osc = audioCtx.createOscillator();
+              const gainNode = audioCtx.createGain();
+              
+              osc.type = "triangle";
+              osc.frequency.setValueAtTime(580, time);
+              
+              gainNode.gain.setValueAtTime(0, time);
+              gainNode.gain.linearRampToValueAtTime(0.9, time + 0.005);
+              gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.25);
+              
+              osc.connect(gainNode);
+              gainNode.connect(compressor);
+              
+              osc.start(time);
+              osc.stop(time + 0.3);
+            }
+          } else if (type === "chime") {
+            // 優雅水晶和弦
+            const chord = [523.25, 659.25, 783.99, 1046.50];
+            chord.forEach((freq, index) => {
+              const time = now + index * 0.12;
+              const osc = audioCtx.createOscillator();
+              const gainNode = audioCtx.createGain();
+              osc.type = "sine";
+              osc.frequency.setValueAtTime(freq, time);
+              
+              gainNode.gain.setValueAtTime(0.9, time);
+              gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.8);
+              
+              osc.connect(gainNode);
+              gainNode.connect(compressor);
+              osc.start(time);
+              osc.stop(time + 1.0);
+            });
+          } else if (type === "beep") {
+            // 電子嗶嗶聲
+            [0, 0.25, 0.5].forEach((delay) => {
+              const time = now + delay;
+              const osc = audioCtx.createOscillator();
+              const gainNode = audioCtx.createGain();
+              osc.type = "triangle";
+              osc.frequency.setValueAtTime(880, time);
+              
+              gainNode.gain.setValueAtTime(0.8, time);
+              gainNode.gain.setValueAtTime(0.001, time + 0.15);
+              
+              osc.connect(gainNode);
+              gainNode.connect(compressor);
+              osc.start(time);
+              osc.stop(time + 0.2);
+            });
+          }
+
+          const closeDelay = getAlarmRepeatDelay(type) || 1200;
+          window.setTimeout(() => {
+            audioCtx.close().catch(() => {});
+          }, closeDelay + 500);
+        } catch (e) {
+          console.error("無法播放音效: ", e);
+        }
+      }
+
+      // 測試音效按鈕
+      testSoundBtn.addEventListener("click", () => {
+        stopAlarmRepeat();
+        playAlarmSound(soundSelect.value);
+      });
+
+      // 快速時間 Preset 按鈕
+      document.querySelectorAll(".preset-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          minutesInput.value = btn.dataset.preset;
+          readDuration();
+        });
+      });
+
+      // 主題切換
+      document.querySelectorAll(".theme-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".theme-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          
+          const themeId = btn.dataset.themeId;
+          document.documentElement.setAttribute("data-theme", themeId);
+          themeBadge.textContent = btn.textContent;
+        });
+      });
+
+      // --- Confetti 煙火特效 ---
       function makePiece() {
         const colors = ["#e6323f", "#009b9e", "#ffd23f", "#ff7a1a", "#2f59ff", "#24b36b", "#8a3ffc"];
         return {
@@ -502,22 +1487,25 @@
           y: -30 - Math.random() * 120,
           size: 8 + Math.random() * 12,
           speed: 2 + Math.random() * 4,
-          drift: -1.6 + Math.random() * 3.2,
+          drift: -1.5 + Math.random() * 3.0,
           rotation: Math.random() * Math.PI,
-          spin: -0.18 + Math.random() * 0.36,
+          spin: -0.15 + Math.random() * 0.3,
           color: colors[Math.floor(Math.random() * colors.length)]
         };
       }
 
       function startConfetti() {
         if (confettiId) return;
+        resizeCanvas();
         confettiPieces = Array.from({ length: 150 }, makePiece);
         animateConfetti();
       }
 
       function stopConfetti() {
-        cancelAnimationFrame(confettiId);
-        confettiId = null;
+        if (confettiId) {
+          cancelAnimationFrame(confettiId);
+          confettiId = null;
+        }
         confettiPieces = [];
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
       }
@@ -528,7 +1516,11 @@
           piece.x += piece.drift;
           piece.y += piece.speed;
           piece.rotation += piece.spin;
-          if (piece.y > window.innerHeight + 40) confettiPieces[index] = makePiece();
+          
+          if (piece.y > window.innerHeight + 40) {
+            confettiPieces[index] = makePiece();
+          }
+          
           ctx.save();
           ctx.translate(piece.x, piece.y);
           ctx.rotate(piece.rotation);
@@ -539,7 +1531,10 @@
         confettiId = requestAnimationFrame(animateConfetti);
       }
 
-      window.addEventListener("resize", resizeCanvas);
+      window.addEventListener("resize", () => {
+        resizeCanvas();
+      });
+      
       applyBtn.addEventListener("click", readDuration);
       targetTimeBtn.addEventListener("click", applyTargetTime);
       startBtn.addEventListener("click", startTimer);
@@ -548,14 +1543,23 @@
       resetBtn.addEventListener("click", resetTimer);
       loadPlaylistBtn.addEventListener("click", loadPlaylist);
 
-      resizeCanvas();
+      courseSelect.addEventListener("change", updateCourseTitle);
+      activeMessageSelect.addEventListener("change", () => {
+        syncCustomMessageInput(activeMessageSelect, activeMessageInput);
+        render();
+      });
+      activeMessageInput.addEventListener("input", render);
+      endMessageSelect.addEventListener("change", () => {
+        syncCustomMessageInput(endMessageSelect, endMessageInput);
+        render();
+      });
+      endMessageInput.addEventListener("input", render);
+
+      // 初始化頁面渲染由 API ready 控制，在此做基本渲染
+      updateCourseTitle();
+      syncCustomMessageInput(activeMessageSelect, activeMessageInput);
+      syncCustomMessageInput(endMessageSelect, endMessageInput);
       render();
-      loadPlaylist();
     </script>
   </body>
 </html>
-
-
-
-
-
