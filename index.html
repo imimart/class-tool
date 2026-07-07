@@ -931,6 +931,17 @@
         return String(value).padStart(2, "0");
       }
 
+      function formatRemainingTime(totalSeconds) {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        if (hours > 0) {
+          return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        }
+        return `${pad(minutes)}:${pad(seconds)}`;
+      }
+
       function stripCourseNumber(text) {
         return text.replace(/^\d+\./, "");
       }
@@ -977,9 +988,6 @@
 
       // 渲染計時器文字與狀態
       function render() {
-        const minutes = Math.floor(remaining / 60);
-        const seconds = remaining % 60;
-        
         if (remaining === 0) {
           message.textContent = "時間到！";
           subMessage.classList.remove("active-message");
@@ -987,7 +995,7 @@
           statusText.textContent = "倒數結束";
           statusIndicator.className = "status-indicator";
         } else {
-          message.innerHTML = `距離上課還有 <span class="message-time">${pad(minutes)}:${pad(seconds)}</span>`;
+          message.innerHTML = `距離上課還有 <span class="message-time">${formatRemainingTime(remaining)}</span>`;
           subMessage.classList.add("active-message");
           subMessage.textContent = getActiveMessage();
           if (isRunning) {
