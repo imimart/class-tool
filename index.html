@@ -313,6 +313,7 @@
         opacity: 0.85;
         margin-top: 4px;
         letter-spacing: 0.5px;
+        white-space: pre-line;
       }
 
       .sub-message.active-message {
@@ -331,11 +332,29 @@
         min-height: 0; /* 讓 flex 子元素能在高度受限時縮小 */
       }
 
+      .video-layer,
+      .practice-carousel {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .video-layer.is-hidden,
+      .practice-carousel.is-hidden {
+        display: none;
+      }
+
       iframe {
         width: 100%;
         height: 100%;
         border: 0;
         display: block;
+      }
+
+      #youtubePlayer {
+        width: 100%;
+        height: 100%;
       }
 
       .empty-player {
@@ -360,6 +379,74 @@
         fill: currentColor;
         opacity: 0.5;
         animation: pulse 2s infinite ease-in-out;
+      }
+
+      .practice-carousel {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #111111;
+      }
+
+      .practice-carousel img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+
+      .practice-empty {
+        color: #f7fafc;
+        font-size: clamp(18px, 2.4vw, 28px);
+        font-weight: 900;
+        text-align: center;
+        padding: 24px;
+      }
+
+      .carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 42px;
+        height: 42px;
+        border: 3px solid #ffffff;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.55);
+        color: #ffffff;
+        font-size: 26px;
+        font-weight: 900;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .carousel-nav.prev {
+        left: 14px;
+      }
+
+      .carousel-nav.next {
+        right: 14px;
+      }
+
+      .carousel-dots {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 12px;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .carousel-dot {
+        width: 10px;
+        height: 10px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.35);
+      }
+
+      .carousel-dot.active {
+        background: #ffd23f;
       }
 
       /* 側邊欄控制面板 */
@@ -431,7 +518,7 @@
         font-size: 13px;
       }
 
-      input, select {
+      input, select, textarea {
         width: 100%;
         min-height: 36px;
         border: var(--border-width) solid var(--border-color);
@@ -445,7 +532,14 @@
         outline: none;
       }
 
-      input:focus, select:focus {
+      textarea {
+        min-height: 82px;
+        padding: 8px 10px;
+        line-height: 1.45;
+        resize: vertical;
+      }
+
+      input:focus, select:focus, textarea:focus {
         border-color: var(--accent);
       }
 
@@ -683,10 +777,19 @@
 
         <!-- 播放器區塊 -->
         <div class="player-wrap">
-          <div id="youtubePlayer"></div>
-          <div id="emptyPlayer" class="empty-player">
-            <svg viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.507a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.87.507 9.388.507 9.388.507s7.518 0 9.388-.507a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-            <span>請在右側控制台載入影片或播放清單</span>
+          <div id="videoLayer" class="video-layer">
+            <div id="youtubePlayer"></div>
+            <div id="emptyPlayer" class="empty-player">
+              <svg viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.507a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.87.507 9.388.507 9.388.507s7.518 0 9.388-.507a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              <span>請在右側控制台載入影片或播放清單</span>
+            </div>
+          </div>
+          <div id="practiceCarousel" class="practice-carousel is-hidden">
+            <img id="practiceImage" alt="練習作業圖片" hidden />
+            <div id="practiceEmpty" class="practice-empty">請在右側貼上練習作業圖片路徑</div>
+            <button id="practicePrevBtn" class="carousel-nav prev" type="button" aria-label="上一張">‹</button>
+            <button id="practiceNextBtn" class="carousel-nav next" type="button" aria-label="下一張">›</button>
+            <div id="practiceDots" class="carousel-dots"></div>
           </div>
         </div>
       </section>
@@ -808,13 +911,22 @@
             <input id="courseInput" class="custom-message-input" type="text" value="" placeholder="請輸入課程名稱" hidden />
           </label>
           <label>
+            倒數情況訊息
+            <select id="countdownStatusSelect">
+              <option selected>距離上課還有</option>
+              <option>練習時間還有</option>
+              <option value="custom">自訂...</option>
+            </select>
+            <input id="countdownStatusInput" class="custom-message-input" type="text" value="" placeholder="請輸入倒數情況訊息" hidden />
+          </label>
+          <label>
             倒數時顯示文字
             <select id="activeMessageSelect">
               <option>快要上課囉，趕快去點名網站完成報到</option>
               <option selected>大家休息一下，喝口水、動一動！</option>
               <option value="custom">自訂....</option>
             </select>
-            <input id="activeMessageInput" class="custom-message-input" type="text" value="" placeholder="請輸入倒數時顯示文字" hidden />
+            <textarea id="activeMessageInput" class="custom-message-input" placeholder="請輸入倒數時顯示文字" hidden></textarea>
           </label>
           <label>
             倒數結束顯示文字
@@ -826,6 +938,18 @@
           </label>
         </div>
 
+        <!-- 顯示內容設定 -->
+        <div class="control-group">
+          <div class="section-title">🖼️ 顯示內容手動切換</div>
+          <label>
+            顯示內容
+            <select id="displayModeSelect">
+              <option value="video" selected>顯示影片</option>
+              <option value="practice">顯示練習圖片</option>
+            </select>
+          </label>
+        </div>
+
         <!-- YouTube 影片設定 -->
         <div class="control-group">
           <div class="section-title">📺 YouTube 影片/播放清單設定</div>
@@ -834,6 +958,32 @@
             <input id="playlistInput" type="url" placeholder="貼上 YouTube 網址或影片 ID" value="https://www.youtube.com/watch?v=4aizyAaIRrA&amp;list=PLFeHIx8c8FmAoYBz2MOYcujqJm-ha-iTE&amp;index=1" />
           </label>
           <button id="loadPlaylistBtn" class="action-btn btn-load" type="button">載入影片/播放清單</button>
+        </div>
+
+        <!-- 練習圖片設定 -->
+        <div class="control-group">
+          <div class="section-title">🖼️ 練習圖片輪播設定</div>
+          <label>
+            練習圖片路徑 1
+            <input class="practice-image-input" type="text" placeholder="貼上圖片路徑或網址" />
+          </label>
+          <label>
+            練習圖片路徑 2
+            <input class="practice-image-input" type="text" placeholder="貼上圖片路徑或網址" />
+          </label>
+          <label>
+            練習圖片路徑 3
+            <input class="practice-image-input" type="text" placeholder="貼上圖片路徑或網址" />
+          </label>
+          <label>
+            練習圖片路徑 4
+            <input class="practice-image-input" type="text" placeholder="貼上圖片路徑或網址" />
+          </label>
+          <label>
+            練習圖片路徑 5
+            <input class="practice-image-input" type="text" placeholder="貼上圖片路徑或網址" />
+          </label>
+          <button id="loadPracticeImagesBtn" class="action-btn btn-load" type="button">載入練習圖片</button>
         </div>
       </aside>
     </main>
@@ -853,6 +1003,9 @@
       const resetBtn = document.querySelector("#resetBtn");
       const playlistInput = document.querySelector("#playlistInput");
       const loadPlaylistBtn = document.querySelector("#loadPlaylistBtn");
+      const displayModeSelect = document.querySelector("#displayModeSelect");
+      const practiceImageInputs = Array.from(document.querySelectorAll(".practice-image-input"));
+      const loadPracticeImagesBtn = document.querySelector("#loadPracticeImagesBtn");
       const soundSelect = document.querySelector("#soundSelect");
       const testSoundBtn = document.querySelector("#testSoundBtn");
       
@@ -861,6 +1014,8 @@
       const courseTitle = document.querySelector("#courseTitle");
       const courseSelect = document.querySelector("#courseSelect");
       const courseInput = document.querySelector("#courseInput");
+      const countdownStatusSelect = document.querySelector("#countdownStatusSelect");
+      const countdownStatusInput = document.querySelector("#countdownStatusInput");
       const activeMessageSelect = document.querySelector("#activeMessageSelect");
       const activeMessageInput = document.querySelector("#activeMessageInput");
       const endMessageSelect = document.querySelector("#endMessageSelect");
@@ -868,7 +1023,14 @@
       
       const statusText = document.querySelector("#statusText");
       const statusIndicator = document.querySelector("#statusIndicator");
+      const videoLayer = document.querySelector("#videoLayer");
       const emptyPlayer = document.querySelector("#emptyPlayer");
+      const practiceCarousel = document.querySelector("#practiceCarousel");
+      const practiceImage = document.querySelector("#practiceImage");
+      const practiceEmpty = document.querySelector("#practiceEmpty");
+      const practicePrevBtn = document.querySelector("#practicePrevBtn");
+      const practiceNextBtn = document.querySelector("#practiceNextBtn");
+      const practiceDots = document.querySelector("#practiceDots");
       const timeEndBadge = document.querySelector("#timeEndBadge");
       const themeBadge = document.querySelector("#themeBadge");
       const canvas = document.querySelector("#confetti");
@@ -891,6 +1053,9 @@
       let confettiId = null;
       let confettiPieces = [];
       let alarmRepeatId = null;
+      let practiceImages = [];
+      let practiceIndex = 0;
+      let practiceCarouselId = null;
 
       // 初始化下拉時間選單、時間徽章
       initTargetTimeSelectors();
@@ -918,7 +1083,7 @@
         
         // 預設目標上課時間
         targetHourSelect.value = "18";
-        targetMinuteSelect.value = "30";
+        targetMinuteSelect.value = "20";
       }
 
       function resizeCanvas() {
@@ -970,6 +1135,10 @@
         return getSelectedMessage(activeMessageSelect, activeMessageInput, "大家休息一下，喝口水、動一動！");
       }
 
+      function getCountdownStatusMessage() {
+        return getSelectedMessage(countdownStatusSelect, countdownStatusInput, "距離上課還有");
+      }
+
       function getEndMessage() {
         return getSelectedMessage(endMessageSelect, endMessageInput, "上課囉! 趕快回到位子上面~");
       }
@@ -995,7 +1164,7 @@
           statusText.textContent = "倒數結束";
           statusIndicator.className = "status-indicator";
         } else {
-          message.innerHTML = `距離上課還有 <span class="message-time">${formatRemainingTime(remaining)}</span>`;
+          message.innerHTML = `${getCountdownStatusMessage()} <span class="message-time">${formatRemainingTime(remaining)}</span>`;
           subMessage.classList.add("active-message");
           subMessage.textContent = getActiveMessage();
           if (isRunning) {
@@ -1133,6 +1302,84 @@
         controlVideo("stop");
       }
 
+      // --- 練習圖片輪播 ---
+      function normalizeImageSource(value) {
+        const path = value.trim();
+        if (!path) return "";
+        if (/^(https?:|file:|data:|blob:)/i.test(path)) return path;
+        if (/^[a-zA-Z]:[\\/]/.test(path)) {
+          return `file:///${path.replace(/\\/g, "/")}`;
+        }
+        return path.replace(/\\/g, "/");
+      }
+
+      function setDisplayMode(mode) {
+        const showPractice = mode === "practice";
+        videoLayer.classList.toggle("is-hidden", showPractice);
+        practiceCarousel.classList.toggle("is-hidden", !showPractice);
+
+        if (showPractice) {
+          controlVideo("pause");
+          startPracticeCarousel();
+        } else {
+          stopPracticeCarousel();
+        }
+      }
+
+      function loadPracticeImages() {
+        practiceImages = practiceImageInputs
+          .map((input) => normalizeImageSource(input.value))
+          .filter(Boolean)
+          .slice(0, 5);
+        practiceIndex = 0;
+        renderPracticeSlide();
+        if (displayModeSelect.value === "practice") {
+          startPracticeCarousel();
+        }
+      }
+
+      function renderPracticeSlide() {
+        const hasImages = practiceImages.length > 0;
+        practiceImage.hidden = !hasImages;
+        practiceEmpty.hidden = hasImages;
+        practicePrevBtn.hidden = practiceImages.length <= 1;
+        practiceNextBtn.hidden = practiceImages.length <= 1;
+
+        if (!hasImages) {
+          practiceImage.removeAttribute("src");
+          practiceDots.innerHTML = "";
+          return;
+        }
+
+        practiceImage.src = practiceImages[practiceIndex];
+        practiceDots.innerHTML = practiceImages
+          .map((_, index) => `<span class="carousel-dot${index === practiceIndex ? " active" : ""}"></span>`)
+          .join("");
+      }
+
+      function showPracticeSlide(offset) {
+        if (practiceImages.length === 0) return;
+        practiceIndex = (practiceIndex + offset + practiceImages.length) % practiceImages.length;
+        renderPracticeSlide();
+      }
+
+      function startPracticeCarousel() {
+        stopPracticeCarousel();
+        renderPracticeSlide();
+        if (practiceImages.length > 1) {
+          practiceCarouselId = setInterval(() => {
+            showPracticeSlide(1);
+          }, 5000);
+        }
+      }
+
+      function stopPracticeCarousel() {
+        if (practiceCarouselId) {
+          clearInterval(practiceCarouselId);
+          practiceCarouselId = null;
+        }
+      }
+
       // --- YouTube Iframe Player API 控制影片邏輯 ---
       window.onYouTubeIframeAPIReady = function() {
         loadPlaylist();
@@ -1140,6 +1387,8 @@
 
       // 控制影片播放/暫停/停止
       function controlVideo(action) {
+        if (action === "play" && displayModeSelect.value === "practice") return;
+
         if (ytPlayerReady && ytPlayer && typeof ytPlayer.playVideo === "function") {
           try {
             if (action === "play") {
@@ -1236,9 +1485,8 @@
           ytPlayer = null;
         }
 
-        // 清空容器並建立 placeholder div
-        const playerWrap = document.querySelector(".player-wrap");
-        playerWrap.innerHTML = '<div id="youtubePlayer"></div>';
+        // 清空影片層並建立 placeholder div
+        videoLayer.innerHTML = '<div id="youtubePlayer"></div>';
 
         const playerVars = {
           rel: 0,
@@ -1281,9 +1529,8 @@
       }
 
       function fallbackStandardIframe(parsed) {
-        const playerWrap = document.querySelector(".player-wrap");
         const embedUrl = buildEmbedUrl(parsed);
-        playerWrap.innerHTML = `<iframe id="youtubePlayer" src="${embedUrl}" title="YouTube 播放器" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+        videoLayer.innerHTML = `<iframe id="youtubePlayer" src="${embedUrl}" title="YouTube 播放器" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
       }
 
       // --- Web Audio API 敲擊鐘聲與西敏寺鐘聲合成 (超高音量 + 動態壓縮防止破音版本) ---
@@ -1557,12 +1804,29 @@
       resumeBtn.addEventListener("click", startTimer);
       resetBtn.addEventListener("click", resetTimer);
       loadPlaylistBtn.addEventListener("click", loadPlaylist);
+      displayModeSelect.addEventListener("change", () => {
+        setDisplayMode(displayModeSelect.value);
+      });
+      loadPracticeImagesBtn.addEventListener("click", loadPracticeImages);
+      practicePrevBtn.addEventListener("click", () => {
+        showPracticeSlide(-1);
+        startPracticeCarousel();
+      });
+      practiceNextBtn.addEventListener("click", () => {
+        showPracticeSlide(1);
+        startPracticeCarousel();
+      });
 
       courseSelect.addEventListener("change", () => {
         syncCustomMessageInput(courseSelect, courseInput);
         updateCourseTitle();
       });
       courseInput.addEventListener("input", updateCourseTitle);
+      countdownStatusSelect.addEventListener("change", () => {
+        syncCustomMessageInput(countdownStatusSelect, countdownStatusInput);
+        render();
+      });
+      countdownStatusInput.addEventListener("input", render);
       activeMessageSelect.addEventListener("change", () => {
         syncCustomMessageInput(activeMessageSelect, activeMessageInput);
         render();
@@ -1577,8 +1841,11 @@
       // 初始化頁面渲染由 API ready 控制，在此做基本渲染
       updateCourseTitle();
       syncCustomMessageInput(courseSelect, courseInput);
+      syncCustomMessageInput(countdownStatusSelect, countdownStatusInput);
       syncCustomMessageInput(activeMessageSelect, activeMessageInput);
       syncCustomMessageInput(endMessageSelect, endMessageInput);
+      loadPracticeImages();
+      setDisplayMode("video");
       render();
     </script>
   </body>
