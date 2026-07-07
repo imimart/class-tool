@@ -916,10 +916,9 @@
           targetMinuteSelect.appendChild(opt);
         }
         
-        // 預設選取目前時間
-        const now = new Date();
-        targetHourSelect.value = pad(now.getHours());
-        targetMinuteSelect.value = pad(now.getMinutes());
+        // 預設目標上課時間
+        targetHourSelect.value = "18";
+        targetMinuteSelect.value = "30";
       }
 
       function resizeCanvas() {
