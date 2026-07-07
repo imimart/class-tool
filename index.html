@@ -803,7 +803,9 @@
               <option>8.領跑未來：AI高效工作實戰課-高雄(9/2~10/28)</option>
               <option>9.創業吸客術:AI+Canva平面設計-新北(9/12~11/28)</option>
               <option>10.創業加速器:Canva行銷設計-台北(3/16~5/25)</option>
+              <option value="custom">自訂...</option>
             </select>
+            <input id="courseInput" class="custom-message-input" type="text" value="" placeholder="請輸入課程名稱" hidden />
           </label>
           <label>
             倒數時顯示文字
@@ -829,7 +831,7 @@
           <div class="section-title">📺 YouTube 影片/播放清單設定</div>
           <label>
             貼上自訂連結 (YouTube 影片或播放清單網址)
-            <input id="playlistInput" type="url" placeholder="貼上 YouTube 網址或影片 ID" value="https://www.youtube.com/watch?v=4aizyAaIRrA&amp;list=PLFeHIx8c8FmAoYBz2MOYcujqJm-ha-iTE&amp;index=21" />
+            <input id="playlistInput" type="url" placeholder="貼上 YouTube 網址或影片 ID" value="https://www.youtube.com/watch?v=4aizyAaIRrA&amp;list=PLFeHIx8c8FmAoYBz2MOYcujqJm-ha-iTE&amp;index=1" />
           </label>
           <button id="loadPlaylistBtn" class="action-btn btn-load" type="button">載入影片/播放清單</button>
         </div>
@@ -858,6 +860,7 @@
       const subMessage = document.querySelector("#subMessage");
       const courseTitle = document.querySelector("#courseTitle");
       const courseSelect = document.querySelector("#courseSelect");
+      const courseInput = document.querySelector("#courseInput");
       const activeMessageSelect = document.querySelector("#activeMessageSelect");
       const activeMessageInput = document.querySelector("#activeMessageInput");
       const endMessageSelect = document.querySelector("#endMessageSelect");
@@ -934,7 +937,8 @@
       }
 
       function updateCourseTitle() {
-        courseTitle.textContent = stripCourseNumber(courseSelect.value);
+        const title = courseSelect.value === "custom" ? courseInput.value.trim() : stripCourseNumber(courseSelect.value);
+        courseTitle.textContent = title;
       }
 
       function syncCustomMessageInput(selectEl, inputEl) {
@@ -1185,7 +1189,9 @@
           rel: "0", 
           autoplay: "0", 
           playsinline: "1", 
-          enablejsapi: "1" 
+          enablejsapi: "1",
+          cc_load_policy: "0",
+          cc_lang_pref: "zh-Hant"
         });
         
         if (listId) {
@@ -1231,7 +1237,9 @@
           rel: 0,
           autoplay: isRunning ? 1 : 0,
           playsinline: 1,
-          enablejsapi: 1
+          enablejsapi: 1,
+          cc_load_policy: 0,
+          cc_lang_pref: "zh-Hant"
         };
 
         if (parsed.listId) {
@@ -1543,7 +1551,11 @@
       resetBtn.addEventListener("click", resetTimer);
       loadPlaylistBtn.addEventListener("click", loadPlaylist);
 
-      courseSelect.addEventListener("change", updateCourseTitle);
+      courseSelect.addEventListener("change", () => {
+        syncCustomMessageInput(courseSelect, courseInput);
+        updateCourseTitle();
+      });
+      courseInput.addEventListener("input", updateCourseTitle);
       activeMessageSelect.addEventListener("change", () => {
         syncCustomMessageInput(activeMessageSelect, activeMessageInput);
         render();
@@ -1557,6 +1569,7 @@
 
       // 初始化頁面渲染由 API ready 控制，在此做基本渲染
       updateCourseTitle();
+      syncCustomMessageInput(courseSelect, courseInput);
       syncCustomMessageInput(activeMessageSelect, activeMessageInput);
       syncCustomMessageInput(endMessageSelect, endMessageInput);
       render();
